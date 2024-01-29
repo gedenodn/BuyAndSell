@@ -63,3 +63,4 @@
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/obj/Debug/net7.0/BuyAndSell.pdb
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/obj/Debug/net7.0/BuyAndSell.genruntimeconfig.cache
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/obj/Debug/net7.0/ref/BuyAndSell.dll
+/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Serilog.dll

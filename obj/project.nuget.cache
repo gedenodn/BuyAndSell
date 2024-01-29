@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "9/6OLpu67uzZxqhhqzO3m73T9lcEUKjkTk5gJ6aeWtPKcvE5tyDiX0WGyo52hvMEYnzG4x/mjNnbPdgD2KU68A==",
+  "dgSpecHash": "SyOFFBe5rL3OqmWDk6/u0KOeFaRAnhnWptAzeEELMRVNfFnhANOIBKRC8k2+xbYMJSj1GkjV/Sj46StT55FWBg==",
   "success": true,
   "projectFilePath": "/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/BuyAndSell.csproj",
   "expectedPackageFiles": [
@@ -59,6 +59,7 @@
     "/Users/arturodenbakh/.nuget/packages/newtonsoft.json/12.0.2/newtonsoft.json.12.0.2.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/npgsql/6.0.0/npgsql.6.0.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/npgsql.entityframeworkcore.postgresql/6.0.0/npgsql.entityframeworkcore.postgresql.6.0.0.nupkg.sha512",
+    "/Users/arturodenbakh/.nuget/packages/serilog/3.1.1/serilog.3.1.1.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/swashbuckle.aspnetcore/6.5.0/swashbuckle.aspnetcore.6.5.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/swashbuckle.aspnetcore.swagger/6.5.0/swashbuckle.aspnetcore.swagger.6.5.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/swashbuckle.aspnetcore.swaggergen/6.5.0/swashbuckle.aspnetcore.swaggergen.6.5.0.nupkg.sha512",
@@ -76,9 +77,9 @@
     "/Users/arturodenbakh/.nuget/packages/system.security.permissions/4.5.0/system.security.permissions.4.5.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/system.security.principal.windows/4.5.0/system.security.principal.windows.4.5.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/system.text.encodings.web/4.5.0/system.text.encodings.web.4.5.0.nupkg.sha512",
-    "/Users/arturodenbakh/.nuget/packages/microsoft.netcore.app.ref/7.0.9/microsoft.netcore.app.ref.7.0.9.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.9/microsoft.aspnetcore.app.ref.7.0.9.nupkg.sha512",
-    "/Users/arturodenbakh/.nuget/packages/microsoft.netcore.app.host.osx-arm64/7.0.9/microsoft.netcore.app.host.osx-arm64.7.0.9.nupkg.sha512"
+    "/Users/arturodenbakh/.nuget/packages/microsoft.netcore.app.host.osx-arm64/7.0.9/microsoft.netcore.app.host.osx-arm64.7.0.9.nupkg.sha512",
+    "/Users/arturodenbakh/.nuget/packages/microsoft.netcore.app.ref/7.0.9/microsoft.netcore.app.ref.7.0.9.nupkg.sha512"
   ],
   "logs": []
 }
