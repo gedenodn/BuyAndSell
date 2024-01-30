@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
-using BuyAndSell.Models;
-using BuyAndSell.ViewModels;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using BuyAndSell.Models;
+using BuyAndSell.ViewModels;
 
 namespace BuyAndSell.Controllers
 {
@@ -50,7 +55,6 @@ namespace BuyAndSell.Controllers
             return BadRequest(ModelState);
         }
 
-
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -70,7 +74,9 @@ namespace BuyAndSell.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in successfully: {Email}", model.Email);
-                    return Ok();
+
+                    var userInfo = new { FirstName = user.FirstName, LastName = user.LastName };
+                    return Ok(userInfo);
                 }
                 else if (result.IsLockedOut)
                 {
@@ -91,7 +97,6 @@ namespace BuyAndSell.Controllers
 
             return BadRequest(ModelState);
         }
-
 
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
