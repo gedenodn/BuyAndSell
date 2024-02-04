@@ -1,14 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
+using BuyAndSell.Data;
+using BuyAndSell.Models;
+using BuyAndSell.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using BuyAndSell.Models;
-using BuyAndSell.ViewModels;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BuyAndSell.Controllers
 {
@@ -18,13 +21,37 @@ namespace BuyAndSell.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger<AccountApiController> _logger; // Зависимость ILogger
+        private readonly ILogger<AccountApiController> _logger;
+        private readonly ApplicationDbContext _applicationDbContext;
+        private readonly byte[] _jwtSecretKey;
 
-        public AccountApiController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountApiController> logger) // Изменен конструктор для внедрения ILogger
+        public AccountApiController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountApiController> logger, ApplicationDbContext applicationDbContext)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _logger = logger; // Инициализация _logger
+            _logger = logger;
+            _applicationDbContext = applicationDbContext;
+            _jwtSecretKey = Encoding.ASCII.GetBytes("MySuperSecretKey12345678901234567890"); // Увеличить размер ключа до 32 байт (256 бит)
+        }
+
+        [HttpGet("CurrentUser")]
+        [Authorize]
+        public IActionResult GetCurrentUser()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = _applicationDbContext.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return NotFound("Пользователь не найден");
+            }
+            return Ok(user);
+        }
+
+        [HttpGet("AllUsersProfile")]
+        public IActionResult GetUsers()
+        {
+            var users = _applicationDbContext.Users.ToList();
+            return Ok(users);
         }
 
         [HttpPost("Register")]
@@ -36,7 +63,7 @@ namespace BuyAndSell.Controllers
                 {
                     UserName = model.Email,
                     Email = model.Email,
-                    EmailConfirmed = true, // Устанавливаем EmailConfirmed в true
+                    EmailConfirmed = true,
                     FirstName = model.FirstName,
                     LastName = model.LastName
                 };
@@ -59,7 +86,6 @@ namespace BuyAndSell.Controllers
         public async Task<IActionResult> Login(LoginViewModel model)
         {
             _logger.LogInformation("Attempting to login user with email: {Email}", model.Email);
-
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
@@ -74,9 +100,9 @@ namespace BuyAndSell.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in successfully: {Email}", model.Email);
-
                     var userInfo = new { FirstName = user.FirstName, LastName = user.LastName };
-                    return Ok(userInfo);
+                    var token = GenerateJwtToken(user);
+                    return Ok(new { Token = token, UserInfo = userInfo });
                 }
                 else if (result.IsLockedOut)
                 {
@@ -94,7 +120,6 @@ namespace BuyAndSell.Controllers
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
                 }
             }
-
             return BadRequest(ModelState);
         }
 
@@ -103,6 +128,24 @@ namespace BuyAndSell.Controllers
         {
             await _signInManager.SignOutAsync();
             return Ok();
+        }
+
+        private string GenerateJwtToken(ApplicationUser user)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("MySuperSecretKey12345678901234567890"));
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Email, user.Email)
+                }),
+                Expires = DateTime.UtcNow.AddDays(7),
+                SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
     }
 }
