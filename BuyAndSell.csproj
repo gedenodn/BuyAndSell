@@ -30,11 +30,13 @@
     <None Remove="Models\" />
     <None Remove="Data\" />
     <None Remove="Models\ViewModel\" />
+    <None Remove="DTO\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Models\" />
     <Folder Include="Data\" />
     <Folder Include="Models\ViewModel\" />
+    <Folder Include="DTO\" />
   </ItemGroup>
 </Project>

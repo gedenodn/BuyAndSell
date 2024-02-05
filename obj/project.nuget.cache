@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "a7NYW1sx85fiDpFeqYRxHyJd8N9Xyn7KEwmg01oIjW4VCpsOtchlPRZOH1Si6MJAxhK4MUb9Y12IWCR982A4EQ==",
+  "dgSpecHash": "hC4my0F9P+U6+2Nd8rOR90YQwls+QbdWSo8Wv53oJwq1NJbrZ0P0Sluro6MTQSQQYRfIvQvmylNtuynOZjlvHA==",
   "success": true,
   "projectFilePath": "/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/BuyAndSell.csproj",
   "expectedPackageFiles": [
@@ -76,7 +76,10 @@
     "/Users/arturodenbakh/.nuget/packages/system.security.cryptography.xml/4.5.0/system.security.cryptography.xml.4.5.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/system.security.permissions/4.5.0/system.security.permissions.4.5.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/system.security.principal.windows/4.5.0/system.security.principal.windows.4.5.0.nupkg.sha512",
-    "/Users/arturodenbakh/.nuget/packages/system.text.encodings.web/4.5.0/system.text.encodings.web.4.5.0.nupkg.sha512"
+    "/Users/arturodenbakh/.nuget/packages/system.text.encodings.web/4.5.0/system.text.encodings.web.4.5.0.nupkg.sha512",
+    "/Users/arturodenbakh/.nuget/packages/microsoft.netcore.app.ref/7.0.9/microsoft.netcore.app.ref.7.0.9.nupkg.sha512",
+    "/Users/arturodenbakh/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.9/microsoft.aspnetcore.app.ref.7.0.9.nupkg.sha512",
+    "/Users/arturodenbakh/.nuget/packages/microsoft.netcore.app.host.osx-arm64/7.0.9/microsoft.netcore.app.host.osx-arm64.7.0.9.nupkg.sha512"
   ],
   "logs": []
 }
