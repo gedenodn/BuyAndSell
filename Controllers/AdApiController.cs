@@ -8,6 +8,12 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.AspNetCore.JsonPatch.Exceptions;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.JsonPatch.Adapters;
 
 namespace BuyAndSell.Controllers
 {
@@ -48,6 +54,25 @@ namespace BuyAndSell.Controllers
             }
         }
 
+        [HttpGet("GetAd/{id}")]
+        public IActionResult GetAd(int id)
+        {
+            try
+            {
+                var ad = _applicationDbContext.Ads.FirstOrDefault(a => a.Id == id);
+                if (ad == null)
+                {
+                    return NotFound("Ad not found.");
+                }
+
+                return Ok(ad);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         [HttpPut("UpdateAd/{id}")]
         public IActionResult UpdateAd(int id, [FromBody] Ad updatedAd)
         {
@@ -64,12 +89,34 @@ namespace BuyAndSell.Controllers
                     return NotFound("Ad not found.");
                 }
 
-                // Update properties of existingAd with values from updatedAd
+               
                 existingAd.Title = updatedAd.Title;
                 existingAd.Description = updatedAd.Description;
                 existingAd.ImageUrl = updatedAd.ImageUrl;
-                // Update other properties as needed
+                
 
+                _applicationDbContext.SaveChanges();
+
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("DeleteAd/{id}")]
+        public IActionResult DeleteAd(int id)
+        {
+            try
+            {
+                var adToDelete = _applicationDbContext.Ads.FirstOrDefault(a => a.Id == id);
+                if (adToDelete == null)
+                {
+                    return NotFound("Ad not found.");
+                }
+
+                _applicationDbContext.Ads.Remove(adToDelete);
                 _applicationDbContext.SaveChanges();
 
                 return NoContent(); // HTTP 204 No Content
@@ -80,6 +127,38 @@ namespace BuyAndSell.Controllers
             }
         }
 
+        [HttpPatch("UpdatePartialAd/{id}")]
+        public IActionResult UpdatePartialAd(int id, [FromBody] JsonPatchDocument<Ad> patchDoc)
+        {
+            if (patchDoc == null)
+            {
+                return BadRequest();
+            }
+
+            var adToUpdate = _applicationDbContext.Ads.FirstOrDefault(a => a.Id == id);
+            if (adToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                patchDoc.ApplyTo(adToUpdate, ModelState);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to apply patch: {ex.Message}");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _applicationDbContext.SaveChanges();
+
+            return NoContent();
+        }
 
         [HttpPost("create")]
         public IActionResult CreateAd([FromBody] Ad ad)

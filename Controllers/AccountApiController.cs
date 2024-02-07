@@ -31,7 +31,7 @@ namespace BuyAndSell.Controllers
             _signInManager = signInManager;
             _logger = logger;
             _applicationDbContext = applicationDbContext;
-            _jwtSecretKey = Encoding.ASCII.GetBytes("MySuperSecretKey12345678901234567890"); // Увеличить размер ключа до 32 байт (256 бит)
+            _jwtSecretKey = Encoding.ASCII.GetBytes("MySuperSecretKey12345678901234567890"); 
         }
 
         [HttpGet("CurrentUser")]

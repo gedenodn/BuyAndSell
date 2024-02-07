@@ -65,3 +65,6 @@
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/obj/Debug/net7.0/ref/BuyAndSell.dll
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Serilog.dll
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Microsoft.AspNetCore.JsonPatch.dll
+/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Newtonsoft.Json.Bson.dll
