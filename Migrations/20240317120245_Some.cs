@@ -4,7 +4,7 @@
 
 namespace BuyAndSell.Migrations
 {
-    public partial class UpdateRegistrationAndLoginModels : Migration
+    public partial class Some : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

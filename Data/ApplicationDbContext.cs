@@ -11,6 +11,8 @@ namespace BuyAndSell.Data
         }
         public DbSet<Ad> Ads { get; set; }
         public DbSet<ApplicationUser> Users { get; set; }
+        public DbSet<Order> Orders { get; set; }
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

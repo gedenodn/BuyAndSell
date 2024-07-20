@@ -1,10 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "7qEBOLcf90RcXXNo/J2XrWfwrUMKqGRll8faT00IMrsGVNN9aGAOdkpeeiPM6x076XruGjzHAnBQms53lu0JGA==",
+  "dgSpecHash": "tyZr5+QKXQA/uR49tVdOKUgwJeEXe1YiW273XcrXpEvtrHkRtr1tpOZWSfakrsN8g4pORaeFFFhaMsDuyc0ZMA==",
   "success": true,
   "projectFilePath": "/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/BuyAndSell.csproj",
   "expectedPackageFiles": [
+    "/Users/arturodenbakh/.nuget/packages/fluentvalidation/11.9.0/fluentvalidation.11.9.0.nupkg.sha512",
+    "/Users/arturodenbakh/.nuget/packages/fluentvalidation.dependencyinjectionextensions/11.9.0/fluentvalidation.dependencyinjectionextensions.11.9.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/humanizer.core/2.8.26/humanizer.core.2.8.26.nupkg.sha512",
+    "/Users/arturodenbakh/.nuget/packages/mediatr/12.2.0/mediatr.12.2.0.nupkg.sha512",
+    "/Users/arturodenbakh/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/microsoft.aspnetcore.authentication/2.2.0/microsoft.aspnetcore.authentication.2.2.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/microsoft.aspnetcore.authentication.abstractions/2.2.0/microsoft.aspnetcore.authentication.abstractions.2.2.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/microsoft.aspnetcore.authentication.cookies/2.2.0/microsoft.aspnetcore.authentication.cookies.2.2.0.nupkg.sha512",
@@ -80,10 +84,7 @@
     "/Users/arturodenbakh/.nuget/packages/system.security.cryptography.xml/4.5.0/system.security.cryptography.xml.4.5.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/system.security.permissions/4.5.0/system.security.permissions.4.5.0.nupkg.sha512",
     "/Users/arturodenbakh/.nuget/packages/system.security.principal.windows/4.5.0/system.security.principal.windows.4.5.0.nupkg.sha512",
-    "/Users/arturodenbakh/.nuget/packages/system.text.encodings.web/4.5.0/system.text.encodings.web.4.5.0.nupkg.sha512",
-    "/Users/arturodenbakh/.nuget/packages/microsoft.aspnetcore.app.ref/7.0.9/microsoft.aspnetcore.app.ref.7.0.9.nupkg.sha512",
-    "/Users/arturodenbakh/.nuget/packages/microsoft.netcore.app.host.osx-arm64/7.0.9/microsoft.netcore.app.host.osx-arm64.7.0.9.nupkg.sha512",
-    "/Users/arturodenbakh/.nuget/packages/microsoft.netcore.app.ref/7.0.9/microsoft.netcore.app.ref.7.0.9.nupkg.sha512"
+    "/Users/arturodenbakh/.nuget/packages/system.text.encodings.web/4.5.0/system.text.encodings.web.4.5.0.nupkg.sha512"
   ],
   "logs": []
 }

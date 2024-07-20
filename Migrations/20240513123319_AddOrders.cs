@@ -4,7 +4,7 @@
 
 namespace BuyAndSell.Migrations
 {
-    public partial class Addadmodel : Migration
+    public partial class AddOrders : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

@@ -1,16 +1,15 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using BuyAndSell.Data;
 using BuyAndSell.Models;
+using BuyAndSell.Models.ViewModel;
+using BuyAndSell.Services;
+using BuyAndSell.Validators.UserModelValidator;
 using BuyAndSell.ViewModels;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace BuyAndSell.Controllers
@@ -24,28 +23,31 @@ namespace BuyAndSell.Controllers
         private readonly ILogger<AccountApiController> _logger;
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly byte[] _jwtSecretKey;
+        private readonly IUserService _userService;
 
-        public AccountApiController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountApiController> logger, ApplicationDbContext applicationDbContext)
+        public AccountApiController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager,ILogger<AccountApiController> logger,
+         ApplicationDbContext applicationDbContext, IUserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _applicationDbContext = applicationDbContext;
+            _userService = userService;
             _jwtSecretKey = Encoding.ASCII.GetBytes("MySuperSecretKey12345678901234567890"); 
         }
 
         [HttpGet("CurrentUser")]
-        [Authorize]
-        public IActionResult GetCurrentUser()
+        public IActionResult GetCurrentUser(string userId)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var user = _applicationDbContext.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
-                return NotFound("Пользователь не найден");
+                _logger.LogError($"[{DateTime.UtcNow}] User not found.");
+                return NotFound("User not found.");
             }
             return Ok(user);
         }
+
 
         [HttpGet("AllUsersProfile")]
         public IActionResult GetUsers()
@@ -57,79 +59,75 @@ namespace BuyAndSell.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser
-                {
-                    UserName = model.Email,
-                    Email = model.Email,
-                    EmailConfirmed = true,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName
-                };
+            var validator = new RegisterViewModelValidator();
+            var validationResult = await validator.ValidateAsync(model);
 
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return Ok();
-                }
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-            }
-            return BadRequest(ModelState);
+            if (!validationResult.IsValid)
+            {
+                _logger.LogError($"[{DateTime.UtcNow}] Registration validation failed.");
+                return BadRequest(validationResult.Errors);
+            }    
+
+            await _userService.AddUserAsync(model);
+            _logger.LogInformation($"[{DateTime.UtcNow}] User registered successfully.");
+            return Ok("User registered successfully.");
         }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            _logger.LogInformation("Attempting to login user with email: {Email}", model.Email);
-            if (ModelState.IsValid)
+            var validator = new LoginViewModelValidator();
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
+            {
+                _logger.LogError($"[{DateTime.UtcNow}] Login validation failed.");
+                return BadRequest(validationResult.Errors);
+            }
+
+            var success = await _userService.LoginUserAsync(model);
+
+            if (success)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null)
-                {
-                    _logger.LogWarning("User with email {Email} not found.", model.Email);
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return BadRequest(ModelState);
-                }
+                var token = GenerateJwtToken(user);
 
-                var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in successfully: {Email}", model.Email);
-                    var userInfo = new { FirstName = user.FirstName, LastName = user.LastName };
-                    var token = GenerateJwtToken(user);
-                    return Ok(new { Token = token, UserInfo = userInfo });
-                }
-                else if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out: {Email}", model.Email);
-                    ModelState.AddModelError(string.Empty, "User account locked out.");
-                }
-                else if (result.IsNotAllowed)
-                {
-                    _logger.LogWarning("User account not allowed to login: {Email}", model.Email);
-                    ModelState.AddModelError(string.Empty, "User account not allowed to login.");
-                }
-                else
-                {
-                    _logger.LogWarning("Failed login attempt for user with email: {Email}", model.Email);
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                }
+                _logger.LogInformation($"[{DateTime.UtcNow}] User logged in successfully.");
+                return Ok(new { Token = token, UserId = user.Id });
             }
-            return BadRequest(ModelState);
+            else
+            {
+                _logger.LogError($"[{DateTime.UtcNow}] Invalid login attempt.");
+                return BadRequest("Invalid login attempt.");
+            }
         }
 
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+
+            _logger.LogInformation($"[{DateTime.UtcNow}] User logged out successfully.");
             return Ok();
         }
 
+
+        [HttpPut("EditProfile")]
+        public async Task<IActionResult> EditProfile(ChangeUserInformationModel model)
+        {
+            var validator = new EditUserValidator();
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
+            {
+                _logger.LogError($"[{DateTime.UtcNow}] User information validation failed.");
+                return BadRequest(validationResult.Errors);
+            }
+
+            await _userService.EditUser(model);
+            _logger.LogInformation($"[{DateTime.UtcNow}] User information edited!");
+            return Ok("User edit successfully.");
+        }
         private string GenerateJwtToken(ApplicationUser user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

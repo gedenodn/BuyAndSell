@@ -68,3 +68,7 @@
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Microsoft.AspNetCore.JsonPatch.dll
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 /Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/Newtonsoft.Json.Bson.dll
+/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/FluentValidation.dll
+/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/FluentValidation.DependencyInjectionExtensions.dll
+/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/MediatR.dll
+/Users/arturodenbakh/Projects/BuyAndSell/BuyAndSell/bin/Debug/net7.0/MediatR.Contracts.dll

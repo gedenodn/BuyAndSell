@@ -1,19 +1,14 @@
 ﻿using BuyAndSell.Data;
-using BuyAndSell.DTO;
 using BuyAndSell.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.Net;
+using BuyAndSell.Services;
 using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.JsonPatch.Operations;
-using Microsoft.AspNetCore.JsonPatch.Exceptions;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.JsonPatch.Adapters;
+using Microsoft.AspNetCore.Mvc;
+using BuyAndSell.Validators;
+using Microsoft.EntityFrameworkCore;
+using BuyAndSell.Contracts;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace BuyAndSell.Controllers
 {
@@ -22,161 +17,125 @@ namespace BuyAndSell.Controllers
     public class AdController : ControllerBase
     {
         private readonly ApplicationDbContext _applicationDbContext;
-        private readonly ILogger<AdController> _logger; 
+        private readonly ILogger<AdController> _logger;
+        private readonly IAdService _adService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AdController(ApplicationDbContext context, ILogger<AdController> logger)
+        public AdController(ApplicationDbContext context, ILogger<AdController> logger, IAdService adService, UserManager<ApplicationUser> userManager)
         {
+            _adService = adService;
             _applicationDbContext = context;
-            _logger = logger; 
+            _logger = logger;
+            _userManager = userManager;
         }
+        [HttpGet("GetAd/{adId}")]
+        public async Task<IActionResult> GetAd(int adId)
+        {
+            var ad = await _applicationDbContext.Ads.FindAsync(adId);
+            if (ad == null)
+            {
+                return NotFound("Ad not found");
+            }
 
+            return Ok(ad);
+        }
         [HttpGet("GetAllAds")]
-        public IActionResult GetAds()
+        public async Task<IActionResult> GetAds()
         {
-            try
-            {
-                var ads = _applicationDbContext.Ads
-                    .ToList()
-                    .Select(ad => new
-                    {
-                        ad.Id,
-                        ad.Title,
-                        ad.Description,
-                        ad.ImageUrl
-                    })
-                    .ToList();
 
-                return Ok(ads);
-            }
-            catch (Exception ex)
+            var ads = await _applicationDbContext.Ads
+                .Select(ad => new
+                {
+                    ad.Id,
+                    ad.Title,
+                    ad.Description,
+                    ad.ImageUrl,
+                    ad.Price
+                })
+                .ToListAsync();
+
+            return Ok(ads);
+        }
+        [HttpPost("Сreate")]
+        public async Task<IActionResult> CreateAd([FromBody] AdRequest adRequest)
+        {
+            if (string.IsNullOrEmpty(adRequest.UserId))
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return BadRequest("User ID not provided.");
             }
+
+            var ad = new Ad()
+            {
+                Description = adRequest.Description,
+                Title = adRequest.Title,
+                ImageUrl = adRequest.ImageUrl,
+                UserId = adRequest.UserId, 
+                Price = adRequest.Price 
+            };
+
+            var validator = new AdValidator();
+            var validationResult = validator.Validate(ad);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            var createdAd = await _adService.AddAdAsync(ad);
+            return CreatedAtAction(nameof(GetMyAds), new { id = createdAd.Id }, createdAd);
         }
 
-        [HttpGet("GetAd/{id}")]
-        public IActionResult GetAd(int id)
+        [HttpGet("MyAds/{userId}")]
+        public async Task<IActionResult> GetMyAds(string userId)
         {
-            try
-            {
-                var ad = _applicationDbContext.Ads.FirstOrDefault(a => a.Id == id);
-                if (ad == null)
-                {
-                    return NotFound("Ad not found.");
-                }
+            var userAds = await _applicationDbContext.Ads
+                .Where(ad => ad.UserId == userId)
+                .ToListAsync();
 
-                return Ok(ad);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        [HttpPut("UpdateAd/{id}")]
-        public IActionResult UpdateAd(int id, [FromBody] Ad updatedAd)
-        {
-            try
-            {
-                if (id != updatedAd.Id)
-                {
-                    return BadRequest("Id in URL does not match Id in Ad object.");
-                }
-
-                var existingAd = _applicationDbContext.Ads.FirstOrDefault(a => a.Id == id);
-                if (existingAd == null)
-                {
-                    return NotFound("Ad not found.");
-                }
-
-               
-                existingAd.Title = updatedAd.Title;
-                existingAd.Description = updatedAd.Description;
-                existingAd.ImageUrl = updatedAd.ImageUrl;
-                
-
-                _applicationDbContext.SaveChanges();
-
-                return NoContent(); 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+            return Ok(userAds);
         }
 
         [HttpDelete("DeleteAd/{id}")]
-        public IActionResult DeleteAd(int id)
+        public async Task<IActionResult> DeleteAd(int id)
         {
-            try
-            {
-                var adToDelete = _applicationDbContext.Ads.FirstOrDefault(a => a.Id == id);
-                if (adToDelete == null)
-                {
-                    return NotFound("Ad not found.");
-                }
-
-                _applicationDbContext.Ads.Remove(adToDelete);
-                _applicationDbContext.SaveChanges();
-
-                return NoContent(); // HTTP 204 No Content
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
-        [HttpPatch("UpdatePartialAd/{id}")]
-        public IActionResult UpdatePartialAd(int id, [FromBody] JsonPatchDocument<Ad> patchDoc)
-        {
-            if (patchDoc == null)
-            {
-                return BadRequest();
-            }
-
-            var adToUpdate = _applicationDbContext.Ads.FirstOrDefault(a => a.Id == id);
-            if (adToUpdate == null)
-            {
-                return NotFound();
-            }
-
-            try
-            {
-                patchDoc.ApplyTo(adToUpdate, ModelState);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Failed to apply patch: {ex.Message}");
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            _applicationDbContext.SaveChanges();
-
+            var adToDelete = await _applicationDbContext.Ads.FindAsync(id);
+         
+            await _adService.DeleteAdAsync(id);
             return NoContent();
         }
 
-        [HttpPost("create")]
-        public IActionResult CreateAd([FromBody] Ad ad)
-        {
-            try
-            {
-                _applicationDbContext.Ads.Add(ad);
-                _applicationDbContext.SaveChanges();
 
-                return Ok(ad);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while processing the request.");
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
+
+        [HttpPut("UpdateAd/{id}")]
+        public async Task<IActionResult> UpdateAd(int id, [FromBody] Ad updatedAd)
+        {
+            var validator = new AdValidator();
+            var validationResult = validator.Validate(updatedAd);
+            
+
+            var ad = await _adService.UpdateAdAsync(id, updatedAd);
+            return Ok(ad);
         }
 
-        
+
+        [HttpPatch("UpdatePartialAd/{id}")]
+        public async Task<IActionResult> UpdatePartialAd(int id, [FromBody] JsonPatchDocument<Ad> patchDoc)
+        {
+            var adToUpdate = await _applicationDbContext.Ads.FindAsync(id);
+            var updatedAd = new Ad();
+            patchDoc.ApplyTo(updatedAd, ModelState);
+
+            var validator = new AdValidator();
+            var validationResult = validator.Validate(updatedAd);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
+            await _adService.UpdatePartialAdAsync(id, patchDoc);
+            return NoContent();
+        }
+
+
+
     }
 }

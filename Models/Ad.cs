@@ -1,11 +1,12 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BuyAndSell.Models
 {
     public class Ad
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Required]
@@ -15,11 +16,10 @@ namespace BuyAndSell.Models
         [Required]
         public string Description { get; set; }
 
-        
-        public string ImageUrl { get; set; } // URL-адрес изображения
+        public string ImageUrl { get; set; }
 
+        public string UserId { get; set; }
+
+        public decimal Price { get; set; }
     }
-
-
 }
-

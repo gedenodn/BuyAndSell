@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BuyAndSell.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240205181811_Add url prop and fix model")]
-    partial class Addurlpropandfixmodel
+    [Migration("20240513123319_AddOrders")]
+    partial class AddOrders
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,10 +40,17 @@ namespace BuyAndSell.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

@@ -9,6 +9,8 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.9.0" />
+    <PackageReference Include="MediatR" Version="12.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.12" />
@@ -20,11 +22,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
+    <PackageReference Include="FluentValidation" Version="11.9.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +37,17 @@
     <None Remove="Data\" />
     <None Remove="Models\ViewModel\" />
     <None Remove="DTO\" />
+    <None Remove="Services\" />
+    <None Remove="Validators\" />
+    <None Remove="Validators\UserModelValidator\" />
+    <None Remove="Сommon\" />
+    <None Remove="Сommon\Behaviors\" />
+    <None Remove="Validators\AdModelValidator\" />
+    <None Remove="Repository\" />
+    <None Remove="Contracts\" />
+    <None Remove="Extensions\" />
+    <None Remove="Providers\" />
+    <None Remove="Logging\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -40,5 +55,16 @@
     <Folder Include="Data\" />
     <Folder Include="Models\ViewModel\" />
     <Folder Include="DTO\" />
+    <Folder Include="Services\" />
+    <Folder Include="Validators\" />
+    <Folder Include="Validators\UserModelValidator\" />
+    <Folder Include="Сommon\" />
+    <Folder Include="Сommon\Behaviors\" />
+    <Folder Include="Validators\AdModelValidator\" />
+    <Folder Include="Repository\" />
+    <Folder Include="Contracts\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Providers\" />
+    <Folder Include="Logging\" />
   </ItemGroup>
 </Project>
